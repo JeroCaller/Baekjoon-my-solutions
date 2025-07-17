@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
 
 public class Main {
 
@@ -29,7 +28,7 @@ public class Main {
         final int N = Integer.parseInt(br.readLine());
 
         // studentNumber: [studentNumbers]
-        Map<Integer, List<Integer>> students = new TreeMap<>();
+        Map<Integer, List<Integer>> students = new HashMap<>();
 
         for (int i = 1; i <= N; ++i) {
             students.put(i, new ArrayList<>());
