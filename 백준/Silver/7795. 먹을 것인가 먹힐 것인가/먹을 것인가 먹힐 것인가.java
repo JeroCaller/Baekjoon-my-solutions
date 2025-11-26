@@ -22,30 +22,37 @@ public class Main {
 
     public static void mySolution() throws IOException {
         final int T = Integer.parseInt(br.readLine());
-        final BinarySearch binarySearch = new BinarySearch();
-
-        for (int i = 0 ; i < T; ++i) {
+        
+        for (int i = 0; i < T; ++i) {
             String[] nm = br.readLine().split(" ");
             final int N = Integer.parseInt(nm[0]);
             final int M = Integer.parseInt(nm[1]);
-            int[] arrayA = toIntArray(new StringTokenizer(br.readLine(), " "));
-            int[] arrayB = toIntArray(new StringTokenizer(br.readLine(), " "));
+            int[] arrayA = toArray(new StringTokenizer(br.readLine(), " "));
+            int[] arrayB = toArray(new StringTokenizer(br.readLine(), " "));
             int count = 0;
 
             Arrays.sort(arrayA);
             Arrays.sort(arrayB);
+            
+            for (int targetNumber : arrayA) {
+                int leftIdx = 0;
+                int rightIdx = arrayB.length - 1;
+                int midIdx = (leftIdx + rightIdx) / 2;
 
-            for (int currentNumber : arrayA) {
-                int resultIdx = binarySearch.getIndexOf(arrayB, currentNumber);
+                while (leftIdx < rightIdx) {
+                    if (arrayB[midIdx] >= targetNumber) {
+                        rightIdx = midIdx;
+                    } else {
+                        leftIdx = midIdx + 1;
+                    }
 
-                if (resultIdx == -1) {
-                    continue;
+                    midIdx = (leftIdx + rightIdx) / 2;
                 }
 
-                if (arrayB[resultIdx] == currentNumber) {
-                    count += resultIdx;
+                if (arrayB[midIdx] >= targetNumber) {
+                    count += midIdx;
                 } else {
-                    count += resultIdx + 1;
+                    count += midIdx + 1;
                 }
             }
 
@@ -53,59 +60,14 @@ public class Main {
             bw.newLine();
         }
     }
-
-    private static int[] toIntArray(StringTokenizer stringTokenizer) {
+    
+    private static int[] toArray(StringTokenizer stringTokenizer) {
         int[] array = new int[stringTokenizer.countTokens()];
-
+        
         for (int i = 0; i < array.length; ++i) {
             array[i] = Integer.parseInt(stringTokenizer.nextToken());
         }
-
+        
         return array;
-    }
-}
-
-class BinarySearch {
-    private int currentIdx;
-
-    public int getIndexOf(int[] array, int targetNumber) {
-        currentIdx = -1;
-        int resultIdx = _getIndexOf(array, targetNumber, 0, array.length - 1);
-
-        if (resultIdx == -1) {
-            if (array[currentIdx] > targetNumber) {
-                return currentIdx - 1;
-            }
-
-            if (array[currentIdx] < targetNumber) {
-                return currentIdx;
-            }
-        }
-
-        while (resultIdx - 1 >= 0 && array[resultIdx] == array[resultIdx - 1]) {
-            --resultIdx;
-        }
-
-        if (resultIdx == 0 && array[resultIdx] >= targetNumber) {
-            return -1;
-        }
-
-        return resultIdx;
-    }
-
-    private int _getIndexOf(int[] array, int targetNumber, int leftIdx, int rightIdx) {
-        if (leftIdx > rightIdx) {
-            return -1;
-        }
-
-        currentIdx = (leftIdx + rightIdx) / 2;
-
-        if (array[currentIdx] > targetNumber) {
-            return _getIndexOf(array, targetNumber, leftIdx, currentIdx - 1);
-        } else if (array[currentIdx] < targetNumber) {
-            return _getIndexOf(array, targetNumber, currentIdx + 1, rightIdx);
-        } else {
-            return currentIdx;
-        }
     }
 }
