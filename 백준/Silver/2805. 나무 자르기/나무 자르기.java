@@ -3,7 +3,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -25,14 +24,18 @@ public class Main {
         final int N = Integer.parseInt(firstLine[0]);
         final int M = Integer.parseInt(firstLine[1]);
         int[] trees = new int[N];
+        int maxTree = 0;
         StringTokenizer stringTokenizer = new StringTokenizer(br.readLine(), " ");
 
         for (int i = 0; i < N; ++i) {
             trees[i] = Integer.parseInt(stringTokenizer.nextToken());
+
+            if (trees[i] > maxTree) {
+                maxTree = trees[i];
+            }
         }
 
-        Arrays.sort(trees);
-        int result = findAnswer(trees, trees[trees.length - 1], M);
+        int result = findAnswer(trees, maxTree, M);
         bw.write(String.valueOf(result));
     }
 
