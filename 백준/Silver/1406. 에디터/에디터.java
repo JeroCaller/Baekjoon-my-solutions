@@ -19,50 +19,144 @@ public class Main {
     }
 
     public static void mySolution() throws IOException {
-        StringBuilder sb = new StringBuilder(br.readLine());
+        CustomLinkedList cll = new CustomLinkedList(br.readLine());
         final int M = Integer.parseInt(br.readLine());
-        int cursor = sb.length();  // 0 <= cursor <= length
 
         for (int i = 0; i < M; ++i) {
             String command = br.readLine();
 
             switch (command.charAt(0)) {
                 case 'L':
-                    if (cursor > 0) {
-                        --cursor;
-                    }
-
+                    cll.moveCursorLeft();;
                     break;
                 case 'D':
-                    if (cursor < sb.length()) {
-                        ++cursor;
-                    }
-
+                    cll.moveCursorRight();
                     break;
                 case 'B':
-                    if (cursor > 0) {
-                        sb.deleteCharAt(cursor - 1);
-                        --cursor;
-                    }
-
+                    cll.removeCurrentElement();
                     break;
                 case 'P':
-                    char charToInsert = command.charAt(command.length() - 1);
-
-                    if (cursor == sb.length()) {
-                        sb.append(charToInsert);
-                    } else {
-                        sb.insert(cursor, charToInsert);
-                    }
-
-                    if (cursor < sb.length()) {
-                        ++cursor;
-                    }
-
+                    cll.insert(command.charAt(command.length() - 1));
                     break;
             }
         }
 
-        bw.write(sb.toString());
+        bw.write(cll.toString());
+    }
+}
+
+class Node {
+    private char alphabet;
+    private Node nextNode;
+    private Node previousNode;
+
+    public Node(char alphabet) {
+        this.alphabet = alphabet;
+    }
+
+    public char getAlphabet() {
+        return alphabet;
+    }
+
+    public void setNextNode(Node nextNode) {
+        this.nextNode = nextNode;
+    }
+
+    public Node getNextNode() {
+        return nextNode;
+    }
+
+    public void setPreviousNode(Node previousNode) {
+        this.previousNode = previousNode;
+    }
+
+    public Node getPreviousNode() {
+        return previousNode;
+    }
+}
+
+class CustomLinkedList {
+    private final Node HEAD = new Node('A');
+    private final Node TAIL = new Node('Z');
+    private Node cursor = HEAD;
+
+    public CustomLinkedList(String initialString) {
+        if (initialString.isEmpty()) {
+            HEAD.setNextNode(TAIL);
+            TAIL.setPreviousNode(HEAD);
+            return;
+        }
+
+        for (int i = 0; i < initialString.length(); ++i) {
+            Node node = new Node(initialString.charAt(i));
+
+            if (HEAD.getNextNode() == null) {
+                HEAD.setNextNode(node);
+                node.setPreviousNode(HEAD);
+            } else {
+                cursor.setNextNode(node);
+                node.setPreviousNode(cursor);
+            }
+
+            cursor = node;
+        }
+
+        cursor.setNextNode(TAIL);
+        TAIL.setPreviousNode(cursor);
+        cursor = TAIL;
+    }
+
+    public void moveCursorLeft() {
+        if (cursor.getPreviousNode() != HEAD) {
+            cursor = cursor.getPreviousNode();
+        }
+    }
+
+    public void moveCursorRight() {
+        if (cursor.getNextNode() != null) {
+            cursor = cursor.getNextNode();
+        }
+    }
+
+    public void removeCurrentElement() {
+        if (cursor == HEAD || cursor.getPreviousNode() == HEAD) {
+            return;
+        }
+
+        Node targetNode = cursor.getPreviousNode();
+        Node leftNode = targetNode.getPreviousNode();
+
+        targetNode.setPreviousNode(null);
+        targetNode.setNextNode(null);
+        leftNode.setNextNode(cursor);
+        cursor.setPreviousNode(leftNode);
+    }
+
+    public void insert(char newChar) {
+        Node newNode = new Node(newChar);
+        Node leftOfNewNode = cursor.getPreviousNode();
+
+        if (cursor == HEAD) {
+            leftOfNewNode = HEAD;
+            cursor = cursor.getNextNode();
+        }
+
+        leftOfNewNode.setNextNode(newNode);
+        newNode.setPreviousNode(leftOfNewNode);
+        cursor.setPreviousNode(newNode);
+        newNode.setNextNode(cursor);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        Node nodePointer = HEAD.getNextNode();
+
+        while (nodePointer != TAIL) {
+            sb.append(nodePointer.getAlphabet());
+            nodePointer = nodePointer.getNextNode();
+        }
+
+        return sb.toString();
     }
 }
