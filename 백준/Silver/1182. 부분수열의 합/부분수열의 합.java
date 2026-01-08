@@ -3,8 +3,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
@@ -39,38 +37,44 @@ public class Main {
 
     public static int countNumberOfCases(int[] nums, int s) {
         int count = 0;
-        Stack<Deque<Integer>> stack = new Stack<>();  // list of indices, not values
+        Stack<Info> stack = new Stack<>();
 
         for (int i = 0; i < nums.length; ++i) {
-            Deque<Integer> indicesQueue = new ArrayDeque<>();
-            indicesQueue.offer(i);
-            stack.push(indicesQueue);
+            Info info = new Info(i, nums[i]);
+            stack.push(info);
         }
 
         while (!stack.isEmpty()) {
-            Deque<Integer> indicesQueue = stack.pop();
-            int total = 0;
+            Info info = stack.pop();
 
-            for (int idx : indicesQueue) {
-                total += nums[idx];
-            }
-
-            if (total == s) {
+            if (info.getTotal() == s) {
                 ++count;
             }
 
-            for (int i = indicesQueue.peekLast() + 1; i < nums.length; ++i) {
-                Deque<Integer> nextIndicesQueue = new ArrayDeque<>();
-
-                for (int idx : indicesQueue) {
-                    nextIndicesQueue.offer(idx);
-                }
-
-                nextIndicesQueue.offer(i);
-                stack.push(nextIndicesQueue);
+            for (int i = info.getMaxIndex() + 1; i < nums.length; ++i) {
+                Info nextInfo = new Info(i, info.getTotal() + nums[i]);
+                stack.push(nextInfo);
             }
         }
 
         return count;
+    }
+}
+
+class Info {
+    private int maxIndex;
+    private int total;
+
+    public Info(int maxIndex, int total) {
+        this.maxIndex = maxIndex;
+        this.total = total;
+    }
+
+    public int getMaxIndex() {
+        return maxIndex;
+    }
+
+    public int getTotal() {
+        return total;
     }
 }
