@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class Main {
     private static final BufferedWriter bw =
@@ -14,7 +13,7 @@ public class Main {
     private static final BufferedReader br =
         new BufferedReader(new InputStreamReader(System.in));
 
-    private static final Map<Integer, List<Integer>> graphMap = new HashMap<>();
+    private static final List<List<Integer>> graphMap = new ArrayList<>();
     private static int[] visited;
     private static int count = 1;
 
@@ -33,16 +32,20 @@ public class Main {
         final int R = Integer.parseInt(conditions[2]);
         visited = new int[N + 1];
 
+        for (int i = 0; i <= N; ++i) {
+            graphMap.add(new ArrayList<>());
+        }
+
         for (int i = 0; i < M; ++i) {
             String[] inputs = br.readLine().split(" ");
             int u = Integer.parseInt(inputs[0]);
             int v = Integer.parseInt(inputs[1]);
-            insertIntoMap(u, v);
-            insertIntoMap(v, u);
+            graphMap.get(u).add(v);
+            graphMap.get(v).add(u);
         }
 
-        for (int key : graphMap.keySet()) {
-            graphMap.get(key).sort((a, b) -> a - b);
+        for (List<Integer> valueList : graphMap) {
+            Collections.sort(valueList);
         }
 
         visited[R] = count;
@@ -54,18 +57,8 @@ public class Main {
         }
     }
 
-    private static void insertIntoMap(int key, int value) {
-        if (graphMap.containsKey(key)) {
-            graphMap.get(key).add(value);
-        } else {
-            List<Integer> valueList = new ArrayList<>();
-            valueList.add(value);
-            graphMap.put(key, valueList);
-        }
-    }
-
     private static void dfs(int start) {
-        if (!graphMap.containsKey(start)) return;
+        if (graphMap.get(start).isEmpty()) return;
 
         for (int node : graphMap.get(start)) {
             if (visited[node] != 0) continue;
