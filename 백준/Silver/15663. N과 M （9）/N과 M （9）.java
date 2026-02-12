@@ -5,9 +5,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -19,7 +17,6 @@ public class Main {
     private static final List<List<Integer>> allResults = new ArrayList<>();
     private static int[] array;
     private static boolean[] visited;
-    private static final Set<List<Integer>> hasTheList = new HashSet<>();
 
     public static void main(String[] args) throws IOException {
         mySolution();
@@ -54,14 +51,14 @@ public class Main {
     }
 
     private static void permutation(List<Integer> oneResult, int r) {
-        if (oneResult.size() == r && !hasTheList.contains(oneResult)) {
+        if (oneResult.size() == r) {
             allResults.add(new ArrayList<>(oneResult));
-            hasTheList.add(oneResult);
             return;
         }
 
         for (int i = 0; i < array.length; ++i) {
             if (visited[i]) continue;
+            if (i > 0 && array[i] == array[i - 1] && !visited[i - 1]) continue;
             visited[i] = true;
             oneResult.add(array[i]);
             permutation(oneResult, r);
